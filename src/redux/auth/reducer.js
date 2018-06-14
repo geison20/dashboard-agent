@@ -1,7 +1,8 @@
 import actions from "./actions";
 
 const initState = {
-  token: null
+  token: null,
+  errorLoginAuthentication: false,
 };
 
 export default function authReducer(state = initState, action) {
@@ -10,7 +11,14 @@ export default function authReducer(state = initState, action) {
     case actions.LOGIN_SUCCESS:
       return {
         ...state,
-        token: action.token
+        token: action.token,
+        errorLoginAuthentication: false,
+      };
+
+    case actions.LOGIN_ERROR:
+      return {
+        ...state,
+        errorLoginAuthentication: true,
       };
 
     case actions.LOGOUT:

@@ -6,10 +6,12 @@ const actions = {
   LOGIN_ERROR: 'LOGIN_ERROR',
 
   checkAuthorization: () => ({ type: actions.CHECK_AUTHORIZATION }),
-  login: (payload) => ({
-    type: actions.LOGIN_REQUEST,
-    payload,
-  }),
+  login: (payload) => {
+    return ({
+      type: actions.LOGIN_REQUEST,
+      payload,
+    })
+  },
   logout: () => ({
     type: actions.LOGOUT
   })

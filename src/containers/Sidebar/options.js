@@ -1,4 +1,3 @@
-import getDevSidebar from "../../customApp/sidebar";
 const options = [
   {
     key: "mailbox",
@@ -336,6 +335,5 @@ const options = [
       // }
     ]
   },
-  ...getDevSidebar
 ];
 export default options;

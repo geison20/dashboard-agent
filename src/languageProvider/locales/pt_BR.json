@@ -1,4 +1,10 @@
 {
+
+  "required.email": "E-mail é obrigatório!",
+  "required.password": "Senha é obrigatória!",
+  "validations.email": "E-mail inválido",
+  "validations.password": "Senha inválida",
+
   "sidebar.email": "Email",
   "sidebar.chat": "Chat",
   "sidebar.ecommerce": "Ecommerce",

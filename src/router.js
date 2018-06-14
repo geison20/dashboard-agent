@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import App from "./containers/App/App";
 import asyncComponent from "./helpers/AsyncFunc";
 import hasPermission from "./helpers/hasPermission";
-import message from "./components/feedback/message";
+// import message from "./components/feedback/message";
 
 const RestrictedRoute = ({ component: Component, isLoggedIn, permission = "admin", ...rest }) => (
   <Route
@@ -24,16 +24,24 @@ const RestrictedRoute = ({ component: Component, isLoggedIn, permission = "admin
     }
   />
 );
-const PublicRoutes = ({ history, isLoggedIn, agentPermisson }) => {
-  console.log("LOGADOOOO ---->", agentPermisson);
-
+const Routes = ({ history, isLoggedIn, agentPermisson }) => {
   return (
     <ConnectedRouter history={history}>
       <Switch>
         <Route
           exact
           path={"/"}
-          component={asyncComponent(() => import("./containers/Page/signin"))}
+          component={asyncComponent(() => import("./containers/Login/signin"))}
+        />
+        <Route
+        exact
+        path={"/signin"}
+        component={asyncComponent(() => import("./containers/Login/signin"))}
+        />
+        <Route
+          exact
+          path={"/signup"}
+          component={asyncComponent(() => import("./containers/AccountCreate/signup"))}
         />
         <Route
           exact
@@ -44,16 +52,6 @@ const PublicRoutes = ({ history, isLoggedIn, agentPermisson }) => {
           exact
           path={"/500"}
           component={asyncComponent(() => import("./containers/Page/500"))}
-        />
-        <Route
-          exact
-          path={"/signin"}
-          component={asyncComponent(() => import("./containers/Page/signin"))}
-        />
-        <Route
-          exact
-          path={"/signup"}
-          component={asyncComponent(() => import("./containers/Page/signup"))}
         />
         <Route
           exact
@@ -80,4 +78,4 @@ const PublicRoutes = ({ history, isLoggedIn, agentPermisson }) => {
 export default connect(state => ({
   isLoggedIn: state.Authentication.token !== null,
   agentPermisson: state.Agent.data ? state.Agent.data.role : null
-}))(PublicRoutes);
+}))(Routes);

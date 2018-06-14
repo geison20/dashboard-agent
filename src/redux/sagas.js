@@ -10,7 +10,6 @@ import ecommerceSaga from './ecommerce/saga';
 import cardsSagas from './card/saga';
 import chatSagas from './chat/sagas';
 import youtubeSearchSagas from './youtubeSearch/sagas';
-import devSagas from '../customApp/redux/sagas';
 
 export default function* rootSaga(getState) {
   yield all([
@@ -25,6 +24,5 @@ export default function* rootSaga(getState) {
     invoicesSagas(),
     chatSagas(),
     youtubeSearchSagas(),
-    devSagas()
   ]);
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import DocumentTitle from 'react-document-title';
 import { PersistGate } from 'redux-persist/integration/react'
+import { hot } from 'react-hot-loader'
 
 import { store, history, persistor } from './redux/store';
 import PublicRoutes from './router';
@@ -40,5 +41,5 @@ const Dashboard = () => (
   </DocumentTitle>
 );
 
-export default Dashboard;
+export default hot(module)(Dashboard);
 export { AppLocale };

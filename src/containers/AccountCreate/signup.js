@@ -123,7 +123,7 @@ class SignUp extends Component {
 
 export default connect(
   state => ({
-    isLoggedIn: state.Auth.idToken !== null ? true : false
+    isLoggedIn: state.Authentication.token !== null ? true : false
   }),
   { login, clearMenu }
 )(SignUp);
