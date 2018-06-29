@@ -106,6 +106,7 @@
     "babel-polyfill": "^6.26.0",
     "enzyme": "^3.2.0",
     "enzyme-to-json": "^3.3.0",
+    "eslint": "^4.19.1",
     "google-maps-react": "^1.1.0",
     "leaflet": "^1.2.0",
     "leaflet-routing-machine": "^3.2.5",

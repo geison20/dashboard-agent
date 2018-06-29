@@ -41,7 +41,7 @@ const Routes = ({ history, isLoggedIn, agentPermisson }) => {
         <Route
           exact
           path={"/signup"}
-          component={asyncComponent(() => import("./containers/AccountCreate/signup"))}
+          component={asyncComponent(() => import("./containers/AccountCreate/"))}
         />
         <Route
           exact
