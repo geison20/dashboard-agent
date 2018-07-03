@@ -1,100 +1,78 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import DocumentTitle from "react-document-title";
-import {
-	Form,
-	Steps,
-	Icon,
-	Input,
-	Button,
-	Alert,
-	Checkbox,
-	message,
-} from "antd";
+import { Form, Icon, Input, Button } from "antd";
 
 import IntlMessages from "../../components/utility/intlMessages";
 import SignUpStyleWrapper from "./style";
-import AccountCreateForm from "./AccountCreateForm";
+import accountActions from "../../redux/account/actions";
 
-const Step = Steps.Step;
 const FormItem = Form.Item;
-
-function hasErrors(fieldsError) {
-	return Object.keys(fieldsError).some((field) => fieldsError[field]);
-}
+const { create } = accountActions;
 
 class SignUp extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			title: "",
-			currentStep: 0,
-			account: {
-				accountName: "",
-			},
-			agent: {},
-			confirmation: {},
+			iconPassword: "lock",
 		};
 	}
 
-	getSteps = () => {
-		const { account } = this.state;
-		return [
-			{
-				title: "Conta",
-				content: (
-					<AccountCreateForm
-						onChangeAccountState={this.onChangeAccountState}
-						initialState={account}
-					/>
-				),
-				icon: <Icon type="solution" />,
-			},
-			{
-				title: "Agente",
-				content: "Second-content",
-				icon: <Icon type="user" />,
-			},
-			{
-				title: "Confirmação",
-				content: "Last-content",
-				icon: <Icon type="smile-o" />,
-			},
-		];
-	};
+	handleSubmit = (e) => {
+		e.preventDefault();
+		const form = this.props.form;
+		const { create } = this.props;
 
-	onSubmit = () => {
-		console.log("create account");
-	};
-
-	onChangeAccountState = (dataFromInput) => {
-		this.setState({
-			account: dataFromInput,
+		form.validateFields((err, values) => {
+			if (!err) {
+				create(values);
+			}
 		});
 	};
 
-	next = () => {
-		const currentStep = this.state.currentStep + 1;
-		this.setState({ currentStep });
+	checkConfirm = (rule, value, callback) => {
+		const form = this.props.form;
+		if (value && this.state.confirmDirty) {
+			form.validateFields(["password-confirm"], { force: true });
+		}
+		callback();
 	};
 
-	prev = () => {
-		const currentStep = this.state.currentStep - 1;
-		this.setState({ currentStep });
+	checkPassword = (rule, value, callback) => {
+		const form = this.props.form;
+		if (value && value !== form.getFieldValue("password")) {
+			this.setState({
+				iconPassword: "lock",
+			});
+			callback(<IntlMessages id="required.password.confirm" />);
+		} else {
+			this.setState({
+				iconPassword: "unlock",
+			});
+			callback();
+		}
 	};
 
 	render() {
-		const { currentStep } = this.state;
-		const steps = this.getSteps();
-
 		const {
 			getFieldDecorator,
-			getFieldsError,
 			getFieldError,
 			isFieldTouched,
 		} = this.props.form;
+
+		const buttonValidationDisabled =
+			!isFieldTouched("accountName") ||
+			!isFieldTouched("agentName") ||
+			!isFieldTouched("password") ||
+			!isFieldTouched("agentEmail") ||
+			(!isFieldTouched("password-confirm") ||
+				getFieldError("accountName") ||
+				getFieldError("agentName") ||
+				getFieldError("agentEmail") ||
+				getFieldError("password")) ||
+			getFieldError("password-confirm");
 
 		return (
 			<DocumentTitle title="Chat-commerce | Cadastro de usuário">
@@ -106,63 +84,196 @@ class SignUp extends Component {
 									<IntlMessages id="page.signInTitle" />
 								</Link>
 							</div>
-							<div className="isoLogoWrapper">
-								<Steps size="small" current={currentStep}>
-									{steps.map(({ title, icon }) => (
-										<Step key={title} title={title} icon={icon} />
-									))}
-								</Steps>
-							</div>
-							<Form>
-								<div
-									style={{
-										marginBottom: "50px",
-									}}
-									className="isoInputWrapper"
-								>
-									{steps[this.state.currentStep].content}
-								</div>
-
-								<div className="isoInputWrapper isoLeftRightComponent">
-									<Button
-										type="primary btnCreate"
-										size="small"
-										disabled={this.state.currentStep == 0}
-										onClick={() => this.prev()}
+							<Form onSubmit={this.handleSubmit}>
+								<div className="isoSignUpForm">
+									<FormItem
+										key="accountName"
+										className="isoInputWrapper"
+										hasFeedback={true}
+										label="Empresa"
 									>
-										<Icon type="arrow-left" />
-										<IntlMessages id="form.create.button.back" />
-									</Button>
-									{this.state.currentStep < steps.length - 1 && (
-										<Button
-											// disabled={hasErrors(getFieldsError())}
-											type="primary btnCreate"
-											size="small"
-											onClick={() => this.next()}
+										{getFieldDecorator("accountName", {
+											rules: [
+												{
+													required: true,
+													message: <IntlMessages id="required.account.name" />,
+												},
+												{
+													whitespace: true,
+													message: <IntlMessages id="validations.whitespace" />,
+												},
+											],
+										})(
+											<Input
+												prefix={
+													<Icon
+														type="home"
+														style={{ color: "rgba(0,0,0,.25)" }}
+													/>
+												}
+												type="text"
+												placeholder="Ex. Chat-commerce"
+											/>,
+										)}
+									</FormItem>
+
+									<FormItem
+										key="agent"
+										className="isoInputWrapper"
+										hasFeedback={true}
+										label="Agente"
+									>
+										{getFieldDecorator("agentName", {
+											rules: [
+												{
+													required: true,
+													message: <IntlMessages id="required.account.name" />,
+												},
+												{
+													whitespace: true,
+													message: <IntlMessages id="validations.whitespace" />,
+												},
+											],
+										})(
+											<Input
+												prefix={
+													<Icon
+														type="user"
+														style={{ color: "rgba(0,0,0,.25)" }}
+													/>
+												}
+												type="text"
+												placeholder="Ex. Vitor Lima"
+											/>,
+										)}
+									</FormItem>
+
+									<FormItem
+										key="email-agent"
+										className="isoInputWrapper"
+										hasFeedback={true}
+										label="E-mail do agente"
+									>
+										{getFieldDecorator("agentEmail", {
+											rules: [
+												{
+													type: "email",
+													message: <IntlMessages id="validations.email" />,
+												},
+												{
+													required: true,
+													message: <IntlMessages id="required.email" />,
+												},
+												{
+													whitespace: true,
+													message: <IntlMessages id="validations.whitespace" />,
+												},
+											],
+										})(
+											<Input
+												prefix={
+													<Icon
+														type="solution"
+														style={{ color: "rgba(0,0,0,.25)" }}
+													/>
+												}
+												type="text"
+												placeholder="Ex. vitor.lima@gmail.com"
+											/>,
+										)}
+									</FormItem>
+
+									<div className="isoInputWrapper isoLeftRightComponent">
+										<FormItem
+											className="margin-input-create"
+											key="password"
+											hasFeedback={true}
+											label="Senha"
 										>
-											<IntlMessages id="form.create.button.go" />
-											<Icon type="arrow-right" />
-										</Button>
-									)}
-									{this.state.currentStep === steps.length - 1 && (
+											{getFieldDecorator("password", {
+												rules: [
+													{
+														required: true,
+														message: <IntlMessages id="required.password" />,
+													},
+													{
+														whitespace: true,
+														message: (
+															<IntlMessages id="validations.whitespace" />
+														),
+													},
+													{
+														validator: this.checkConfirm,
+													},
+												],
+											})(
+												<Input
+													prefix={
+														<Icon
+															type="lock"
+															style={{ color: "rgba(0,0,0,.25)" }}
+														/>
+													}
+													type="password"
+													placeholder="Ex. ************"
+												/>,
+											)}
+										</FormItem>
+										<FormItem
+											key="password-repeat"
+											hasFeedback={true}
+											label="Repita a senha"
+										>
+											{getFieldDecorator("password-confirm", {
+												rules: [
+													{
+														required: true,
+														message: (
+															<IntlMessages id="required.password.confirmation" />
+														),
+													},
+													{
+														validator: this.checkPassword,
+													},
+													{
+														whitespace: true,
+														message: (
+															<IntlMessages id="validations.whitespace" />
+														),
+													},
+												],
+											})(
+												<Input
+													prefix={
+														<Icon
+															type={this.state.iconPassword}
+															style={{ color: "rgba(0,0,0,.25)" }}
+														/>
+													}
+													type="password"
+													placeholder="Ex. ************"
+												/>,
+											)}
+										</FormItem>
+									</div>
+
+									<FormItem className="isoInputWrapper">
 										<Button
-											// disabled={hasErrors(getFieldsError())}
-											type="primary btnCreate"
-											size="small"
+											disabled={buttonValidationDisabled}
+											style={{ width: "100%" }}
+											type="primary"
 											htmlType="submit"
-											onClick={() => message.success("Processing complete!")}
 										>
 											<IntlMessages id="form.create.button.create" />
-											<Icon type="check-circle-o" />
 										</Button>
-									)}
+									</FormItem>
+									<div className="isoInputWrapper isoCenterComponent isoHelperWrapper">
+										<Link to="/signin">
+											<IntlMessages id="page.signUpAlreadyAccount" />
+										</Link>
+									</div>
 								</div>
 							</Form>
-							{/* <div className="isoInputWrapper isoCenterComponent isoHelperWrapper">
-								<Link to="/signin">
-									<IntlMessages id="page.signUpAlreadyAccount" />
-								</Link>
-							</div> */}
 						</div>
 					</div>
 				</SignUpStyleWrapper>
@@ -177,5 +288,5 @@ export default connect(
 	(state) => ({
 		isLoggedIn: state.Authentication.token !== null ? true : false,
 	}),
-	{},
+	{ create },
 )(SignUpForm);

@@ -94,16 +94,15 @@ const SignUpStyleWrapper = styled.div`
 					}
 				}
 			}
-
+			.margin-input-create {
+				margin-right: 10px;
+			}
 			.isoLeftRightComponent {
 				input {
 					width: 100%;
 
 					&:first-child {
-						margin-right: ${(props) =>
-							props["data-rtl"] === "rtl" ? "inherit" : "20px"};
-						margin-left: ${(props) =>
-							props["data-rtl"] === "rtl" ? "20px" : "inherit"};
+						margin-right: 10px;
 					}
 				}
 			}

@@ -1,6 +1,8 @@
 {
 	"required.email": "E-mail é obrigatório!",
 	"required.password": "Senha é obrigatória!",
+	"required.password.confirmation": "Confirmação é obrigatória!",
+	"required.password.confirm": "Senhas não conferem!",
 	"required.account.name": "Nome é obrigatório!",
 	"required.account.document": "Documento é obrigatório!",
 

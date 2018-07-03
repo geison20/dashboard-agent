@@ -55,6 +55,7 @@ class SignIn extends Component {
 			getFieldError,
 			isFieldTouched,
 		} = this.props.form;
+
 		const emailError = isFieldTouched("email") && getFieldError("email");
 		const passwordError =
 			isFieldTouched("password") && getFieldError("password");
