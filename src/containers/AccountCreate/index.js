@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import DocumentTitle from "react-document-title";
 import { Form, Icon, Input, Button } from "antd";
+import { injectIntl, FormattedMessage } from "react-intl";
 
-import IntlMessages from "../../components/utility/intlMessages";
 import SignUpStyleWrapper from "./style";
 import accountActions from "../../redux/account/actions";
 
@@ -34,9 +34,17 @@ class SignUp extends Component {
 
 	checkConfirm = (rule, value, callback) => {
 		const form = this.props.form;
+		const checkPasswordRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,12}/;
+
+		if (!checkPasswordRegExp.test(value)) {
+			callback(<FormattedMessage id="required.password.invalid.characteres" />);
+		}
+
 		if (value && this.state.confirmDirty) {
 			form.validateFields(["password-confirm"], { force: true });
 		}
+
+
 		callback();
 	};
 
@@ -46,7 +54,7 @@ class SignUp extends Component {
 			this.setState({
 				iconPassword: "lock",
 			});
-			callback(<IntlMessages id="required.password.confirm" />);
+			callback(<FormattedMessage id="required.password.confirm" />);
 		} else {
 			this.setState({
 				iconPassword: "unlock",
@@ -81,7 +89,7 @@ class SignUp extends Component {
 						<div className="isoSignUpContent">
 							<div className="isoLogoWrapper">
 								<Link to="/dashboard">
-									<IntlMessages id="page.signInTitle" />
+									<FormattedMessage id="page.signInTitle" />
 								</Link>
 							</div>
 							<Form onSubmit={this.handleSubmit}>
@@ -96,11 +104,37 @@ class SignUp extends Component {
 											rules: [
 												{
 													required: true,
-													message: <IntlMessages id="required.account.name" />,
+													message: (
+														<FormattedMessage id="required.account.name" />
+													),
+												},
+												{
+													min: 3,
+													message: (
+														<FormattedMessage
+															id="validations.min"
+															values={{
+																count: 3,
+															}}
+														/>
+													),
+												},
+												{
+													max: 80,
+													message: (
+														<FormattedMessage
+															id="validations.max"
+															values={{
+																count: 80,
+															}}
+														/>
+													),
 												},
 												{
 													whitespace: true,
-													message: <IntlMessages id="validations.whitespace" />,
+													message: (
+														<FormattedMessage id="validations.whitespace" />
+													),
 												},
 											],
 										})(
@@ -127,11 +161,37 @@ class SignUp extends Component {
 											rules: [
 												{
 													required: true,
-													message: <IntlMessages id="required.account.name" />,
+													message: (
+														<FormattedMessage id="required.account.name" />
+													),
+												},
+												{
+													min: 3,
+													message: (
+														<FormattedMessage
+															id="validations.min"
+															values={{
+																count: 3,
+															}}
+														/>
+													),
+												},
+												{
+													max: 80,
+													message: (
+														<FormattedMessage
+															id="validations.max"
+															values={{
+																count: 80,
+															}}
+														/>
+													),
 												},
 												{
 													whitespace: true,
-													message: <IntlMessages id="validations.whitespace" />,
+													message: (
+														<FormattedMessage id="validations.whitespace" />
+													),
 												},
 											],
 										})(
@@ -152,21 +212,23 @@ class SignUp extends Component {
 										key="email-agent"
 										className="isoInputWrapper"
 										hasFeedback={true}
-										label="E-mail do agente"
+										label="E-mail"
 									>
 										{getFieldDecorator("agentEmail", {
 											rules: [
 												{
 													type: "email",
-													message: <IntlMessages id="validations.email" />,
+													message: <FormattedMessage id="validations.email" />,
 												},
 												{
 													required: true,
-													message: <IntlMessages id="required.email" />,
+													message: <FormattedMessage id="required.email" />,
 												},
 												{
 													whitespace: true,
-													message: <IntlMessages id="validations.whitespace" />,
+													message: (
+														<FormattedMessage id="validations.whitespace" />
+													),
 												},
 											],
 										})(
@@ -194,12 +256,14 @@ class SignUp extends Component {
 												rules: [
 													{
 														required: true,
-														message: <IntlMessages id="required.password" />,
+														message: (
+															<FormattedMessage id="required.password" />
+														),
 													},
 													{
 														whitespace: true,
 														message: (
-															<IntlMessages id="validations.whitespace" />
+															<FormattedMessage id="validations.whitespace" />
 														),
 													},
 													{
@@ -229,7 +293,7 @@ class SignUp extends Component {
 													{
 														required: true,
 														message: (
-															<IntlMessages id="required.password.confirmation" />
+															<FormattedMessage id="required.password.confirmation" />
 														),
 													},
 													{
@@ -238,7 +302,7 @@ class SignUp extends Component {
 													{
 														whitespace: true,
 														message: (
-															<IntlMessages id="validations.whitespace" />
+															<FormattedMessage id="validations.whitespace" />
 														),
 													},
 												],
@@ -264,12 +328,12 @@ class SignUp extends Component {
 											type="primary"
 											htmlType="submit"
 										>
-											<IntlMessages id="form.create.button.create" />
+											<FormattedMessage id="form.create.button.create" />
 										</Button>
 									</FormItem>
 									<div className="isoInputWrapper isoCenterComponent isoHelperWrapper">
 										<Link to="/signin">
-											<IntlMessages id="page.signUpAlreadyAccount" />
+											<FormattedMessage id="form.create.signUpAlreadyAccount" />
 										</Link>
 									</div>
 								</div>
@@ -283,6 +347,10 @@ class SignUp extends Component {
 }
 
 const SignUpForm = Form.create()(SignUp);
+
+injectIntl(SignUpForm, {
+	withRef: false,
+});
 
 export default connect(
 	(state) => ({

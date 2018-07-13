@@ -3,16 +3,22 @@
 	"required.password": "Senha é obrigatória!",
 	"required.password.confirmation": "Confirmação é obrigatória!",
 	"required.password.confirm": "Senhas não conferem!",
+	"required.password.invalid.characteres": "Senha fraca, tente outra!",
 	"required.account.name": "Nome é obrigatório!",
 	"required.account.document": "Documento é obrigatório!",
 
 	"validations.email": "E-mail inválido!",
 	"validations.password": "Senha inválida!",
 	"validations.whitespace": "Não é permitido espaço em branco!",
+	"validations.min": "Deve possuir no mínimo {count} caracteres!",
+	"validations.max": "Deve possuir no máximo {count} caracteres!",
 
 	"form.create.button.go": "Próximo",
 	"form.create.button.back": "Voltar",
 	"form.create.button.create": "Criar conta",
+	"form.create.signUpAlreadyAccount": "Já possuí uma conta? Clique aqui!",
+
+
 
 	"sidebar.email": "Email",
 	"sidebar.chat": "Chat",
@@ -562,7 +568,6 @@
 	"page.signUpFacebook": "Sign up with Facebook",
 	"page.signUpGooglePlus": "Sign up with Google Plus",
 	"page.signUpAuth0": "Sign Up with Auth0",
-	"page.signUpAlreadyAccount": "Already have an account? Sign in.",
 	"widget.reportswidget.label": "Income",
 	"widget.reportswidget.details":
 		"Lorem ipsum dolor sit amet   consectetur adipisicing elit   sed do eiusmod tempor",

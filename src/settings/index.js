@@ -1,11 +1,16 @@
 export default {
 	apiUrl: "http://yoursite.com/api/",
 };
+
 const siteConfig = {
 	siteName: "ISOMORPHIC",
 	siteIcon: "ion-flash",
 	footerText: "Isomorphic ©2017 Created by RedQ, Inc",
 };
+
+const getDefaultLocale = () => "pt";
+
+const defaultTitle = "chat-commerce";
 
 const themeConfig = {
 	topbar: "themedefault",
@@ -13,7 +18,6 @@ const themeConfig = {
 	layout: "themedefault",
 	theme: "themedefault",
 };
-const language = "portuguese";
 const AlgoliaSearchConfig = {
 	appId: "",
 	apiKey: "",
@@ -70,8 +74,9 @@ const mapboxConfig = {
 const youtubeSearchApi = "";
 export {
 	siteConfig,
+	getDefaultLocale,
+	defaultTitle,
 	themeConfig,
-	language,
 	AlgoliaSearchConfig,
 	Auth0Config,
 	firebaseConfig,
