@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import DocumentTitle from "react-document-title";
 import { Form, Icon, Input, Button } from "antd";
 import { injectIntl, FormattedMessage } from "react-intl";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import SignUpStyleWrapper from "./style";
 import accountActions from "../../redux/account/actions";
@@ -17,6 +18,8 @@ class SignUp extends Component {
 
 		this.state = {
 			iconPassword: "lock",
+			captchaValid: false,
+			valueCaptcha: null,
 		};
 	}
 
@@ -27,6 +30,7 @@ class SignUp extends Component {
 
 		form.validateFields((err, values) => {
 			if (!err) {
+				values.valueCaptcha = this.state.valueCaptcha;
 				create(values);
 			}
 		});
@@ -43,7 +47,6 @@ class SignUp extends Component {
 		if (value && this.state.confirmDirty) {
 			form.validateFields(["password-confirm"], { force: true });
 		}
-
 
 		callback();
 	};
@@ -71,6 +74,7 @@ class SignUp extends Component {
 		} = this.props.form;
 
 		const buttonValidationDisabled =
+			!this.state.captchaValid ||
 			!isFieldTouched("accountName") ||
 			!isFieldTouched("agentName") ||
 			!isFieldTouched("password") ||
@@ -321,6 +325,19 @@ class SignUp extends Component {
 										</FormItem>
 									</div>
 
+									<FormItem className="isoInputWrapper isoCenterComponent">
+										<ReCAPTCHA
+											ref="recaptcha"
+											sitekey="6LcrEGQUAAAAABGBMNQwZ6xCXYKMjhpB31Fnhsty"
+											onChange={(value) =>
+												this.setState({
+													captchaValid: true,
+													valueCaptcha: value,
+												})
+											}
+										/>
+									</FormItem>
+
 									<FormItem className="isoInputWrapper">
 										<Button
 											disabled={buttonValidationDisabled}
@@ -331,6 +348,7 @@ class SignUp extends Component {
 											<FormattedMessage id="form.create.button.create" />
 										</Button>
 									</FormItem>
+
 									<div className="isoInputWrapper isoCenterComponent isoHelperWrapper">
 										<Link to="/signin">
 											<FormattedMessage id="form.create.signUpAlreadyAccount" />
