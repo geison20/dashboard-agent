@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import DocumentTitle from "react-document-title";
-import { Form, Icon, Input, Button } from "antd";
+import { Form, Icon, Input, Button, message } from "antd";
 import { injectIntl, FormattedMessage } from "react-intl";
 import ReCAPTCHA from "react-google-recaptcha";
 
@@ -30,7 +30,7 @@ class SignUp extends Component {
 
 		form.validateFields((err, values) => {
 			if (!err) {
-				values.valueCaptcha = this.state.valueCaptcha;
+				values.captcha = this.state.valueCaptcha;
 				create(values);
 			}
 		});
@@ -73,18 +73,24 @@ class SignUp extends Component {
 			isFieldTouched,
 		} = this.props.form;
 
+		const { createSucess } = this.props;
+
 		const buttonValidationDisabled =
 			!this.state.captchaValid ||
 			!isFieldTouched("accountName") ||
 			!isFieldTouched("agentName") ||
 			!isFieldTouched("password") ||
-			!isFieldTouched("agentEmail") ||
+			!isFieldTouched("email") ||
 			(!isFieldTouched("password-confirm") ||
 				getFieldError("accountName") ||
 				getFieldError("agentName") ||
-				getFieldError("agentEmail") ||
+				getFieldError("email") ||
 				getFieldError("password")) ||
 			getFieldError("password-confirm");
+
+		{
+			createSucess && message.success("Conta criada com sucesso!", 3);
+		}
 
 		return (
 			<DocumentTitle title="Chat-commerce | Cadastro de usuário">
@@ -96,6 +102,7 @@ class SignUp extends Component {
 									<FormattedMessage id="page.signInTitle" />
 								</Link>
 							</div>
+
 							<Form onSubmit={this.handleSubmit}>
 								<div className="isoSignUpForm">
 									<FormItem
@@ -218,7 +225,7 @@ class SignUp extends Component {
 										hasFeedback={true}
 										label="E-mail"
 									>
-										{getFieldDecorator("agentEmail", {
+										{getFieldDecorator("email", {
 											rules: [
 												{
 													type: "email",
@@ -371,8 +378,11 @@ injectIntl(SignUpForm, {
 });
 
 export default connect(
-	(state) => ({
-		isLoggedIn: state.Authentication.token !== null ? true : false,
-	}),
+	({ Account }) => {
+		console.log("==========", Account.accountCreateSucess);
+		return {
+			createSucess: Account.accountCreateSucess,
+		};
+	},
 	{ create },
 )(SignUpForm);

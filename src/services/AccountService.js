@@ -3,15 +3,17 @@ import axios from "../helpers/axios";
 const AccountService = async ({
 	accountName,
 	agentName,
-	agentEmail,
+	email,
 	password,
+	captcha,
 }) =>
 	axios
 		.post("/api/accounts", {
 			accountName,
 			agentName,
-			agentEmail,
+			email,
 			password,
+			["g-recaptcha-response"]: captcha,
 		})
 		.then((response) => response);
 

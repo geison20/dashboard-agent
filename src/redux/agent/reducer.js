@@ -1,15 +1,15 @@
 import actions from "./actions";
 
 const initState = {
-	data: null,
+	agent: null,
 };
 
-export default function authReducer(state = initState, action) {
-	switch (action.type) {
+export default function authReducer(state = initState, { type, agent }) {
+	switch (type) {
 		case actions.SET_USER:
 			return {
 				...state,
-				data: action.agent,
+				agent,
 			};
 
 		default:

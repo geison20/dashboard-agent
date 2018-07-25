@@ -5,15 +5,17 @@ import AccountService from "../../services/AccountService";
 
 function* createAccount({ payload }) {
 	try {
-		const a = yield call(AccountService, payload);
-		console.log(a);
-		// yield put({
-		// 	type: authActions.LOGIN_SUCCESS,
-		// 	token,
-		// });
-		// yield put(push("/signin"));
+		yield call(AccountService, payload);
+
+		yield put({
+			type: accountActions.ACCOUNT_SUCESS_CREATE,
+		});
 	} catch (e) {
-		// yield put({ type: authActions.LOGIN_ERROR });
+		console.log("ERROO ======>", e.response);
+		yield put({
+			type: accountActions.API_ACCOUNT_CREATE_ERROR,
+			errors: e.response.data,
+		});
 	}
 }
 
