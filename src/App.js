@@ -11,12 +11,12 @@ import { LocaleProvider } from "antd";
 import { IntlProvider } from "react-intl";
 import themes from "./settings/themes";
 import AppLocale from "./language";
-import DashboardCSSMain from "./dashAppStyle";
+import AppCSSMain from "./AppStyle";
 import { themeConfig, getDefaultLocale, defaultTitle } from "./settings";
 
 const currentAppLocale = AppLocale[getDefaultLocale()];
 
-const Dashboard = () => (
+const App = () => (
 	<DocumentTitle title={defaultTitle}>
 		<LocaleProvider locale={currentAppLocale.antd}>
 			<IntlProvider
@@ -24,18 +24,18 @@ const Dashboard = () => (
 				messages={currentAppLocale.messages}
 			>
 				<ThemeProvider theme={themes[themeConfig.theme]}>
-					<DashboardCSSMain>
+					<AppCSSMain>
 						<Provider store={store}>
 							<PersistGate loading={null} persistor={persistor}>
 								<PublicRoutes history={history} />
 							</PersistGate>
 						</Provider>
-					</DashboardCSSMain>
+					</AppCSSMain>
 				</ThemeProvider>
 			</IntlProvider>
 		</LocaleProvider>
 	</DocumentTitle>
 );
 
-export default hot(module)(Dashboard);
-export { AppLocale };
+export default hot(module)(App);
+export { currentAppLocale };

@@ -3,7 +3,7 @@ export default {
 };
 
 const siteConfig = {
-	siteName: "ISOMORPHIC",
+	siteName: "Chat-Commerce",
 	siteIcon: "ion-flash",
 	footerText: "Isomorphic ©2017 Created by RedQ, Inc",
 };
@@ -18,10 +18,12 @@ const themeConfig = {
 	layout: "themedefault",
 	theme: "themedefault",
 };
+
 const AlgoliaSearchConfig = {
 	appId: "",
 	apiKey: "",
 };
+
 const Auth0Config = {
 	domain: "",
 	clientID: "",
@@ -54,6 +56,7 @@ const Auth0Config = {
 		},
 	},
 };
+
 const firebaseConfig = {
 	apiKey: "",
 	authDomain: "",
@@ -62,16 +65,20 @@ const firebaseConfig = {
 	storageBucket: "",
 	messagingSenderId: "",
 };
+
 const googleConfig = {
 	apiKey: "", //
 };
+
 const mapboxConfig = {
 	tileLayer: "",
 	maxZoom: "",
 	defaultZoom: "",
 	center: [],
 };
+
 const youtubeSearchApi = "";
+
 export {
 	siteConfig,
 	getDefaultLocale,

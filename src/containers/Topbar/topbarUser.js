@@ -1,62 +1,80 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import Popover from '../../components/uielements/popover';
-import IntlMessages from '../../components/utility/intlMessages';
-import userpic from '../../image/user1.png';
-import authAction from '../../redux/auth/actions';
-import TopbarDropdownWrapper from './topbarDropdown.style';
+import React, { Component } from "react";
+import { Avatar, Badge } from "antd";
+import { injectIntl, FormattedMessage } from "react-intl";
+
+import { connect } from "react-redux";
+import Popover from "../../components/uielements/popover";
+import authAction from "../../redux/auth/actions";
+import TopbarDropdownWrapper from "./topbarDropdown.style";
 
 const { logout } = authAction;
 
 class TopbarUser extends Component {
-  constructor(props) {
-    super(props);
-    this.handleVisibleChange = this.handleVisibleChange.bind(this);
-    this.hide = this.hide.bind(this);
-    this.state = {
-      visible: false
-    };
-  }
-  hide() {
-    this.setState({ visible: false });
-  }
-  handleVisibleChange() {
-    this.setState({ visible: !this.state.visible });
-  }
+	constructor(props) {
+		super(props);
 
-  render() {
-    const content = (
-      <TopbarDropdownWrapper className="isoUserDropdown">
-        <a className="isoDropdownLink">
-          <IntlMessages id="themeSwitcher.settings" />
-        </a>
-        <a className="isoDropdownLink">
-          <IntlMessages id="sidebar.feedback" />
-        </a>
-        <a className="isoDropdownLink">
-          <IntlMessages id="topbar.help" />
-        </a>
-        <a className="isoDropdownLink" onClick={this.props.logout}>
-          <IntlMessages id="topbar.logout" />
-        </a>
-      </TopbarDropdownWrapper>
-    );
+		this.state = {
+			visible: false,
+		};
+	}
 
-    return (
-      <Popover
-        content={content}
-        trigger="click"
-        visible={this.state.visible}
-        onVisibleChange={this.handleVisibleChange}
-        arrowPointAtCenter={true}
-        placement="bottomLeft"
-      >
-        <div className="isoImgWrapper">
-          <img alt="user" src={userpic} />
-          <span className="userActivity online" />
-        </div>
-      </Popover>
-    );
-  }
+	hide = () => {
+		this.setState({ visible: false });
+	};
+
+	handleVisibleChange = () => {
+		this.setState({ visible: !this.state.visible });
+	};
+
+	render() {
+		const { gravatarPicture, logout } = this.props;
+
+		const content = (
+			<TopbarDropdownWrapper className="isoUserDropdown">
+				<a className="isoDropdownLink" onClick={logout}>
+					<FormattedMessage id="topbar.logout" />
+				</a>
+			</TopbarDropdownWrapper>
+		);
+
+		return (
+			<Popover
+				content={content}
+				trigger="click"
+				visible={this.state.visible}
+				onVisibleChange={this.handleVisibleChange}
+				arrowPointAtCenter={true}
+				placement="bottomLeft"
+			>
+				<Badge count={20} overflowCount={10} title="Notificações" showZero>
+					{gravatarPicture ? (
+						<Avatar
+							shape="square"
+							src={gravatarPicture}
+							size="large"
+							alt="Fotos de usuário"
+						/>
+					) : (
+						<Avatar
+							shape="square"
+							icon="user"
+							size="large"
+							alt="Fotos de usuário"
+						/>
+					)}
+				</Badge>
+			</Popover>
+		);
+	}
 }
-export default connect(null, { logout })(TopbarUser);
+
+injectIntl(TopbarUser, {
+	withRef: false,
+});
+
+export default connect(
+	(state) => ({
+		gravatarPicture: state.Agent.agent.gravatar_thumb,
+	}),
+	{ logout },
+)(TopbarUser);

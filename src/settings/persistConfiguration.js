@@ -13,10 +13,15 @@ import { createFilter } from "redux-persist-transform-filter";
 // you want to store only a subset of your state of reducer one
 const AuthenticationSubsetFilter = createFilter("Authentication", ["token"]);
 const AccountSubsetFilter = createFilter("Account", ["account"]);
+const AgentSubsetFilter = createFilter("Agent", ["agent"]);
 
 export default {
 	key: "root",
 	storage,
 	// blacklist: ["Account"], // will not be persisted
-	transforms: [AuthenticationSubsetFilter, AccountSubsetFilter],
+	transforms: [
+		AuthenticationSubsetFilter,
+		AccountSubsetFilter,
+		AgentSubsetFilter,
+	],
 };

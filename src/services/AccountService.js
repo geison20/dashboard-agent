@@ -1,6 +1,6 @@
 import axios from "../helpers/axios";
 
-const AccountService = async ({
+export const create = async ({
 	accountName,
 	agentName,
 	email,
@@ -16,5 +16,3 @@ const AccountService = async ({
 			["g-recaptcha-response"]: captcha,
 		})
 		.then((response) => response);
-
-export default AccountService;

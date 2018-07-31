@@ -1,11 +1,10 @@
 import { all, takeLatest, put, call } from "redux-saga/effects";
-import { push } from "react-router-redux";
 import accountActions from "./actions";
-import AccountService from "../../services/AccountService";
+import { create } from "../../services/AccountService";
 
 function* createAccount({ payload }) {
 	try {
-		yield call(AccountService, payload);
+		yield call(create, payload);
 
 		yield put({
 			type: accountActions.ACCOUNT_SUCESS_CREATE,

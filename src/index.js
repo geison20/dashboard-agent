@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Dashboard from './Dashboard';
-import 'antd/dist/antd.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import "antd/dist/antd.css";
 
-ReactDOM.render(<Dashboard />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));

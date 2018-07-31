@@ -25,8 +25,7 @@ class SignUp extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		const form = this.props.form;
-		const { create } = this.props;
+		const { create, form } = this.props;
 
 		form.validateFields((err, values) => {
 			if (!err) {
@@ -379,7 +378,6 @@ injectIntl(SignUpForm, {
 
 export default connect(
 	({ Account }) => {
-		console.log("==========", Account.accountCreateSucess);
 		return {
 			createSucess: Account.accountCreateSucess,
 		};

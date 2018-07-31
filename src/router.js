@@ -3,21 +3,15 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import { ConnectedRouter } from "react-router-redux";
 import { connect } from "react-redux";
 
-import App from "./containers/App/App";
+import Dashboard from "./containers/App/Dashboard";
 import asyncComponent from "./helpers/AsyncFunc";
 import hasPermission from "./helpers/hasPermission";
-// import message from "./components/feedback/message";
 
-const RestrictedRoute = ({
-	component: Component,
-	isLoggedIn,
-	hasPermission = false,
-	...rest
-}) => (
+const RestrictedRoute = ({ component: Component, isLoggedIn, ...rest }) => (
 	<Route
 		{...rest}
 		render={(props) =>
-			isLoggedIn && hasPermission ? (
+			isLoggedIn ? (
 				<Component {...props} />
 			) : (
 				<Redirect
@@ -34,6 +28,11 @@ const Routes = ({ history, isLoggedIn, agentPermisson }) => {
 	return (
 		<ConnectedRouter history={history}>
 			<Switch>
+				<Route
+					exact
+					path={"/activation"}
+					component={asyncComponent(() => import("./containers/Activation"))}
+				/>
 				<Route
 					exact
 					path={"/"}
@@ -78,11 +77,7 @@ const Routes = ({ history, isLoggedIn, agentPermisson }) => {
 
 				<RestrictedRoute
 					path="/dashboard"
-					component={App}
-					hasPermission={hasPermission(
-						["admin", "agent", "read"],
-						agentPermisson,
-					)}
+					component={Dashboard}
 					isLoggedIn={isLoggedIn}
 				/>
 			</Switch>
@@ -92,5 +87,4 @@ const Routes = ({ history, isLoggedIn, agentPermisson }) => {
 
 export default connect((state) => ({
 	isLoggedIn: state.Authentication.token !== null,
-	agentPermisson: state.Agent.agent ? state.Agent.agent.role : null,
 }))(Routes);

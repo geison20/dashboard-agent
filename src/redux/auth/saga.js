@@ -8,10 +8,9 @@ import {
 } from "redux-saga/effects";
 import jwtDecode from "jwt-decode";
 import { push } from "react-router-redux";
-import { clearToken } from "../../helpers/utility";
 // import getToken from '../../helpers/getToken';
 import authActions from "./actions";
-import agentActions from "../agent/actions";
+import { SET_USER } from "../agent/actions";
 import accountActions from "../account/actions";
 import AuthenticationService from "../../services/AuthenticationService";
 
@@ -28,7 +27,7 @@ function* loginRequest({ payload }) {
 		});
 
 		yield put({
-			type: agentActions.SET_USER,
+			type: SET_USER,
 			agent,
 		});
 
@@ -45,8 +44,7 @@ function* loginRequest({ payload }) {
 
 function* logout() {
 	yield takeEvery(authActions.LOGOUT, function*() {
-		clearToken();
-		yield put(push("/"));
+		yield put(push("/signin"));
 	});
 }
 
@@ -65,6 +63,6 @@ export default function* rootSaga() {
 	yield all([
 		// takeLatest(authActions.CHECK_AUTHORIZATION, checkAuthorization),
 		takeLatest(authActions.LOGIN_REQUEST, loginRequest),
-		// fork(logout),
+		fork(logout),
 	]);
 }
