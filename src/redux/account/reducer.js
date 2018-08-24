@@ -1,21 +1,15 @@
-import actions from "./actions";
+import { CREATE_ACCOUNT, SET_ACCOUNT } from "./actions";
 
-const initState = { accountCreateSucess: false, account: null };
+const initState = { account: null };
 
 export default function authReducer(state = initState, { type, account }) {
 	switch (type) {
-		case actions.CREATE_ACCOUNT:
+		case CREATE_ACCOUNT:
 			return {
 				...state,
 			};
 
-		case actions.ACCOUNT_SUCESS_CREATE:
-			return {
-				...state,
-				accountCreateSucess: true,
-			};
-
-		case actions.SET_ACCOUNT:
+		case SET_ACCOUNT:
 			return {
 				...state,
 				account,

@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import WindowResizeListener from "react-window-size-listener";
 import { connect } from "react-redux";
 import { Layout } from "antd";
 import { Debounce } from "react-throttle";
-import WindowResizeListener from "react-window-size-listener";
-import authAction from "../../redux/auth/actions";
+
+import { logout } from "../../redux/auth/actions";
 import appActions from "../../redux/app/actions";
 import Sidebar from "../Sidebar/Sidebar";
 import Topbar from "../Topbar/Topbar";
@@ -13,13 +14,15 @@ import AppHolder from "./commonStyle";
 import "./global.css";
 
 const { Content, Footer } = Layout;
-const { logout } = authAction;
 const { toggleAll } = appActions;
 
 export class Dashboard extends Component {
 	render() {
-		const { url } = this.props.match;
+		const {
+			match: { url },
+		} = this.props;
 		const appHeight = window.innerHeight;
+
 		return (
 			<AppHolder>
 				<Layout style={{ height: appHeight }}>
@@ -69,6 +72,6 @@ export class Dashboard extends Component {
 }
 
 export default connect(
-	(state) => ({}),
+	() => ({}),
 	{ logout, toggleAll },
 )(Dashboard);

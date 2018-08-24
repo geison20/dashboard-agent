@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 // import Input from '../../components/uielements/input';
-import AddNewUser from "./addNewUser";
 import Scrollbars from "../../containers/Sidebar/customScrollBar";
 import Button from "../../components/uielements/button";
 import actions from "../../redux/chat/actions";
@@ -16,16 +15,19 @@ import {
 } from "./message.style";
 
 class ChatRooms extends Component {
-	state = {
-		value: "",
-		searchedChatRooms: this.props.chatRooms,
-	};
-	componentWillReceiveProps(nextProps) {
-		this.setState({ value: "", searchedChatRooms: nextProps.chatRooms });
+	constructor(props) {
+		super(props);
+
+		console.log("this.props.pusherClients", this.props.pusherClients);
+		this.state = {
+			value: "",
+			userIntoRoomsAssociatedByAgent: this.props.pusherClients,
+		};
 	}
+
 	onSearch = (event) => {
 		const value = event.target.value;
-		const searchedChatRooms = value ? [] : this.props.chatRooms;
+		const userIntoRoomsAssociatedByAgent = value ? [] : this.props.chatRooms;
 		if (value) {
 			this.props.chatRooms.forEach((chatRoom) => {
 				if (
@@ -33,58 +35,47 @@ class ChatRooms extends Component {
 						.toLowerCase()
 						.includes(value.toLowerCase())
 				) {
-					searchedChatRooms.push(chatRoom);
+					userIntoRoomsAssociatedByAgent.push(chatRoom);
 				}
 			});
 		}
-		this.setState({ value, searchedChatRooms });
+		this.setState({ value, userIntoRoomsAssociatedByAgent });
 	};
+
 	render() {
-		const {
-			users,
-			setSelectedChatroom,
-			selectedChatRoom,
-			toggleMobileList,
-			toggleCompose,
-		} = this.props;
-		const { value, searchedChatRooms } = this.state;
-		const singleChatRoom = (chatRoom, index) => {
-			const { otherUserInfo, lastMessage, lastMessageTime } = chatRoom;
-			const { name, profileImageUrl } = otherUserInfo;
-			const selected = selectedChatRoom.id === chatRoom.id;
-			const style = {
-				background: selected ? "#f7f7f7" : "rgba(0,0,0,0)",
-			};
-			const selectChatroom = (event) => {
+		const { handleSelectedClient } = this.props;
+
+		const { value, userIntoRoomsAssociatedByAgent } = this.state;
+
+		const singleChatRoom = (client, index) => {
+			const { createdAt, id, name } = client;
+
+			const selectedClient = (event) => {
 				event.stopPropagation();
-				if (!selected) {
-					setSelectedChatroom(chatRoom);
-				}
-				if (toggleMobileList) {
-					toggleMobileList(false);
-				}
+
+				handleSelectedClient(client);
 			};
+
 			return (
-				<UserLists key={index} style={style} onClick={selectChatroom}>
+				<UserLists key={index} onClick={selectedClient}>
 					<div className="userListsGravatar">
 						<img
 							alt="#"
 							style={{ width: 45, height: 45 }}
-							src={profileImageUrl}
+							src="https://bootdey.com/img/Content/avatar/avatar6.png"
 						/>
 					</div>
 					<div className="userListsContent">
 						<h4>{name}</h4>
 						<div className="chatExcerpt">
-							<p>{lastMessage}</p>
-							<span className="userListsTime">
-								{timeDifference(lastMessageTime)}
-							</span>
+							<p>{id}</p>
+							<span className="userListsTime">{timeDifference(createdAt)}</span>
 						</div>
 					</div>
 				</UserLists>
 			);
 		};
+
 		return (
 			<ChatSidebar>
 				<SidebarSearchBox>
@@ -93,43 +84,52 @@ class ChatRooms extends Component {
 						onChange={this.onSearch}
 						placeholder="Search Contact"
 					/>
-					<AddNewUser />
 				</SidebarSearchBox>
 				<UserListsWrapper>
 					<Scrollbars>
-						{searchedChatRooms.length === 0 ? (
+						{userIntoRoomsAssociatedByAgent.length === 0 ? (
 							<HelperText
 								text="No Conversation"
 								className="messageHelperText"
 							/>
 						) : (
-							searchedChatRooms.map(singleChatRoom)
+							userIntoRoomsAssociatedByAgent
+								.filter((user) => user.presence.state === "online")
+								.map(singleChatRoom)
 						)}
 					</Scrollbars>
 				</UserListsWrapper>
-
-				{users.length > 0 && (
-					<div className="ComposeMessageButton">
-						<Button onClick={toggleCompose} type="primary">
-							Compose
-						</Button>
-					</div>
-				)}
 			</ChatSidebar>
 		);
 	}
 }
-function mapStateToProps(state) {
-	const { users, chatRooms, openCompose, selectedChatRoom } = state.Chat;
-	const { view } = state.App;
-	return {
-		users,
-		chatRooms: chatRooms.filter((chatRoom) => chatRoom.lastMessageTime > 0),
-		selectedChatRoom: view === "DesktopView" ? selectedChatRoom : {},
-		openCompose,
-	};
-}
+
 export default connect(
-	mapStateToProps,
+	(state) => {
+		return {
+			chatRooms: [
+				{
+					id: "-LHaN6BXK3Bs2ixYGbPi",
+					lastMessage: "hola",
+					lastMessageTime: 1535493602261,
+					otherUserId: "-LHaN6BXK3Bs2ixYGbPh",
+					otherUserInfo: {
+						dob: "22/04/1992",
+						gender: "Female",
+						id: "-LHaN6BXK3Bs2ixYGbPh",
+						language: "English",
+						mobileNo: "9429692135",
+						modalActive: true,
+						name: "Ahmed",
+						profileImageUrl:
+							"https://thumb7.shutterstock.com/display_pic_with_logo/818215/552201991/stock-photo-beautiful-young-grinning-professional-black-woman-in-office-with-eyeglasses-folded-arms-and-552201991.jpg",
+					},
+					reverse: false,
+					userId: "wt4TiasxgPrQ3dNwVZ55",
+				},
+			],
+			selectedChatRoom: true,
+		};
+	},
 	actions,
 )(ChatRooms);

@@ -1,26 +1,23 @@
-import actions from "./actions";
+import { LOGIN_ERROR, LOGOUT, SET_ACCOUNT_TOKEN } from "./actions";
 
 const initState = {
 	token: null,
-	errorLoginAuthentication: false,
 };
 
-export default function authReducer(state = initState, action) {
-	switch (action.type) {
-		case actions.LOGIN_SUCCESS:
+export default function authReducer(state = initState, { type, token }) {
+	switch (type) {
+		case LOGIN_ERROR:
 			return {
 				...state,
-				token: action.token,
-				errorLoginAuthentication: false,
 			};
 
-		case actions.LOGIN_ERROR:
+		case SET_ACCOUNT_TOKEN:
 			return {
 				...state,
-				errorLoginAuthentication: true,
+				token,
 			};
 
-		case actions.LOGOUT:
+		case LOGOUT:
 			return initState;
 
 		default:

@@ -7,10 +7,9 @@ import { injectIntl, FormattedMessage } from "react-intl";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import SignUpStyleWrapper from "./style";
-import accountActions from "../../redux/account/actions";
+import { create } from "../../services/AccountService";
 
 const FormItem = Form.Item;
-const { create } = accountActions;
 
 class SignUp extends Component {
 	constructor(props) {
@@ -20,16 +19,20 @@ class SignUp extends Component {
 			iconPassword: "lock",
 			captchaValid: false,
 			valueCaptcha: null,
+			createSucess: false,
 		};
 	}
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		const { create, form } = this.props;
+		const { form } = this.props;
+		const { valueCaptcha } = this.state;
 
 		form.validateFields((err, values) => {
 			if (!err) {
-				values.captcha = this.state.valueCaptcha;
+				values.captcha = valueCaptcha;
+
+				console.log("values =====>", values);
 				create(values);
 			}
 		});
@@ -72,10 +75,10 @@ class SignUp extends Component {
 			isFieldTouched,
 		} = this.props.form;
 
-		const { createSucess } = this.props;
+		const { captchaValid, createSucess } = this.state;
 
 		const buttonValidationDisabled =
-			!this.state.captchaValid ||
+			!captchaValid ||
 			!isFieldTouched("accountName") ||
 			!isFieldTouched("agentName") ||
 			!isFieldTouched("password") ||
@@ -376,11 +379,4 @@ injectIntl(SignUpForm, {
 	withRef: false,
 });
 
-export default connect(
-	({ Account }) => {
-		return {
-			createSucess: Account.accountCreateSucess,
-		};
-	},
-	{ create },
-)(SignUpForm);
+export default connect()(SignUpForm);

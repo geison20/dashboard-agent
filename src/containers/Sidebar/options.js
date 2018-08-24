@@ -1,15 +1,17 @@
 const options = [
 	{
+		key: "chat",
+		label: "sidebar.chat",
+		leftIcon: "ion-chatbubbles",
+		permissions: ["admin", "agent"],
+	},
+	{
 		key: "agent",
 		label: "sidebar.agent",
 		leftIcon: "ion-android-contacts",
 		permissions: ["admin", "agent"],
 	},
-	// {
-	// 	key: "chat",
-	// 	label: "sidebar.chat",
-	// 	leftIcon: "ion-chatbubbles",
-	// },
+
 	// {
 	// 	key: "ecommerce",
 	// 	label: "sidebar.ecommerce",

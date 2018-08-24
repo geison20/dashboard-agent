@@ -8,7 +8,6 @@ import createSagaMiddleware from "redux-saga";
 import reducers from "./reducers";
 import rootSaga from "./sagas";
 import persistConfig from "../settings/persistConfiguration";
-import authActions from "./auth/actions";
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -28,7 +27,7 @@ const store = createStore(
 );
 
 const persistor = persistStore(store, {}, () => {
-	store.dispatch(authActions.checkAuthorization());
+	// store.dispatch(authActions.checkAuthorization());
 });
 
 sagaMiddleware.run(rootSaga);

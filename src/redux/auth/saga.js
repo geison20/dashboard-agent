@@ -1,28 +1,19 @@
-import {
-	all,
-	takeEvery,
-	takeLatest,
-	put,
-	fork,
-	call,
-} from "redux-saga/effects";
-import jwtDecode from "jwt-decode";
 import { push } from "react-router-redux";
-// import getToken from '../../helpers/getToken';
-import authActions from "./actions";
+import { all, takeEvery, takeLatest, put, fork } from "redux-saga/effects";
+
+import {
+	LOGIN_ERROR,
+	LOGIN_SUCCESS,
+	LOGOUT,
+	SET_ACCOUNT_TOKEN,
+} from "./actions";
 import { SET_USER } from "../agent/actions";
-import accountActions from "../account/actions";
-import AuthenticationService from "../../services/AuthenticationService";
+import { SET_ACCOUNT } from "../account/actions";
 
-function* loginRequest({ payload }) {
+function* loginSuccess({ payload: { token, agent, account } }) {
 	try {
-		const {
-			data: { token },
-		} = yield call(AuthenticationService, payload);
-		const { account, ...agent } = jwtDecode(token);
-
 		yield put({
-			type: authActions.LOGIN_SUCCESS,
+			type: SET_ACCOUNT_TOKEN,
 			token,
 		});
 
@@ -32,37 +23,22 @@ function* loginRequest({ payload }) {
 		});
 
 		yield put({
-			type: accountActions.SET_ACCOUNT,
+			type: SET_ACCOUNT,
 			account,
 		});
 
 		yield put(push("/dashboard"));
 	} catch (e) {
-		yield put({ type: authActions.LOGIN_ERROR });
+		yield put({ type: LOGIN_ERROR });
 	}
 }
 
 function* logout() {
-	yield takeEvery(authActions.LOGOUT, function*() {
+	yield takeEvery(LOGOUT, function*() {
 		yield put(push("/signin"));
 	});
 }
 
-// When refresh a page
-// function* checkAuthorization () {
-//   console.warn("When refresh a page this enter in context");
-//   // const token = yield getToken();
-//   //
-//   // if (!token) {
-//   //   console.log("VAI LOGAR");
-//   //   yield put(push('/'));
-//   // }
-// }
-
 export default function* rootSaga() {
-	yield all([
-		// takeLatest(authActions.CHECK_AUTHORIZATION, checkAuthorization),
-		takeLatest(authActions.LOGIN_REQUEST, loginRequest),
-		fork(logout),
-	]);
+	yield all([takeLatest(LOGIN_SUCCESS, loginSuccess), fork(logout)]);
 }

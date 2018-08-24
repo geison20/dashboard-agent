@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import DocumentTitle from "react-document-title";
-import { Form, Icon, Input, Button, Alert } from "antd";
+import { Form, Icon, Input, Button } from "antd";
+import jwtDecode from "jwt-decode";
 
-import authAction from "../../redux/auth/actions";
 import IntlMessages from "../../components/utility/intlMessages";
 import SignInStyleWrapper from "./signin.style";
 
-const { login } = authAction;
+import { authenticate } from "../../services/AuthenticationService";
+import { loginSuccess } from "../../redux/auth/actions";
 
 const FormItem = Form.Item;
 
@@ -32,21 +33,30 @@ class SignIn extends Component {
 		this.props.form.validateFields();
 	}
 
-	handleSubmit(e) {
+	handleSubmit = (e) => {
 		e.preventDefault();
 
-		this.setState({
-			loading: true,
-		});
+		const {
+			loginSuccess,
+			form: { validateFields },
+		} = this.props;
 
-		const { login } = this.props;
+		this.setState({ loading: true });
 
-		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				login(values);
-			}
+		validateFields(async (err, values) => {
+			if (err) return;
+
+			try {
+				const {
+					data: { token },
+				} = await authenticate(values);
+
+				const { account, ...agent } = jwtDecode(token);
+
+				loginSuccess({ account, agent, token });
+			} catch (error) {}
 		});
-	}
+	};
 
 	render() {
 		const {
@@ -59,7 +69,6 @@ class SignIn extends Component {
 		const emailError = isFieldTouched("email") && getFieldError("email");
 		const passwordError =
 			isFieldTouched("password") && getFieldError("password");
-		const { errorLoginAuthentication } = this.props;
 
 		return (
 			<DocumentTitle title="chat-commerce | Login">
@@ -131,17 +140,6 @@ class SignIn extends Component {
 										)}
 									</FormItem>
 
-									<div className="isoInputWrapper">
-										{errorLoginAuthentication && (
-											<Alert
-												message="E-mail ou senha incorretos"
-												type="error"
-												showIcon
-												closable
-											/>
-										)}
-									</div>
-
 									<FormItem className="isoInputWrapper">
 										<Button
 											disabled={hasErrors(getFieldsError())}
@@ -174,9 +172,6 @@ class SignIn extends Component {
 const FormCreated = Form.create()(SignIn);
 
 export default connect(
-	(state) => ({
-		isLoggedIn: state.Authentication.token !== null ? true : false,
-		errorLoginAuthentication: state.Authentication.errorLoginAuthentication,
-	}),
-	{ login },
+	() => ({}),
+	{ loginSuccess },
 )(FormCreated);

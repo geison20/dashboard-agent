@@ -8,6 +8,10 @@ const routes = [
 		component: asyncComponent(() => import("../Widgets/index.js")),
 	},
 	{
+		path: "chat",
+		component: asyncComponent(() => import("../Chat")),
+	},
+	{
 		path: "agent",
 		component: asyncComponent(() => import("../Agents/index.js")),
 	},
@@ -22,14 +26,6 @@ const routes = [
 	{
 		path: "calendar",
 		component: asyncComponent(() => import("../Calendar/Calendar")),
-	},
-	{
-		path: "googlemap",
-		component: asyncComponent(() => import("../Map/GoogleMap/googleMap")),
-	},
-	{
-		path: "leafletmap",
-		component: asyncComponent(() => import("../Map/Leaflet/leaflet")),
 	},
 	{
 		path: "table_ant",
@@ -224,24 +220,6 @@ const routes = [
 		component: asyncComponent(() => import("../Charts/reactTrend")),
 	},
 	{
-		path: "card",
-		component: asyncComponent(() => import("../Ecommerce/card")),
-	},
-	{
-		path: "cart",
-		component: asyncComponent(() => import("../Ecommerce/cart")),
-	},
-	{
-		path: "checkout",
-		component: asyncComponent(() => import("../Ecommerce/checkout")),
-	},
-	{
-		path: "shop",
-		component: asyncComponent(() =>
-			import("../Ecommerce/algolia/instantSearch"),
-		),
-	},
-	{
 		path: "reactDates",
 		component: asyncComponent(() =>
 			import("../AdvancedUI/ReactDates/reactDates"),
@@ -274,10 +252,6 @@ const routes = [
 	{
 		path: "invoice",
 		component: asyncComponent(() => import("../Invoice")),
-	},
-	{
-		path: "chat",
-		component: asyncComponent(() => import("../Chat")),
 	},
 ];
 
