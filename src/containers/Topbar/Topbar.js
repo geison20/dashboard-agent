@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Layout } from "antd";
+
 import appActions from "../../redux/app/actions";
-// import TopbarNotification from "./topbarNotification";
-// import TopbarMessage from "./topbarMessage";
+import TopbarNotification from "./topbarNotification";
+import TopbarMessage from "./topbarMessage";
 // import TopbarSearch from "./topbarSearch";
 import TopbarUser from "./topbarUser";
 import TopbarWrapper from "./topbar.style";
@@ -12,6 +13,10 @@ const { Header } = Layout;
 const { toggleCollapsed } = appActions;
 
 class Topbar extends Component {
+	constructor(props) {
+		super(props);
+	}
+
 	render() {
 		const { toggleCollapsed, url, locale } = this.props;
 		const collapsed = this.props.collapsed && !this.props.openDrawer;
@@ -46,14 +51,14 @@ class Topbar extends Component {
 							onClick={() => this.setState({ selectedItem: "notification" })}
 							className="isoNotify"
 						>
-							{/* <TopbarNotification locale={locale} /> */}
+							<TopbarNotification locale={locale} />
 						</li>
 
 						<li
 							onClick={() => this.setState({ selectedItem: "message" })}
 							className="isoMsg"
 						>
-							{/* <TopbarMessage locale={locale} /> */}
+							<TopbarMessage locale={locale} />
 						</li>
 
 						<li
@@ -70,9 +75,10 @@ class Topbar extends Component {
 }
 
 export default connect(
-	(state) => ({
-		...state.App,
-		locale: "pt",
-	}),
-	{ toggleCollapsed },
+	({
+		Agent: {
+			agent: { email, id },
+		},
+		App: { online },
+	}) => ({}),
 )(Topbar);

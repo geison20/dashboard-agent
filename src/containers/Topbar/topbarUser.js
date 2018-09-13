@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Avatar, Badge } from "antd";
+import { Avatar, Badge, Icon, Card, Switch } from "antd";
 import { injectIntl, FormattedMessage } from "react-intl";
 
 import { connect } from "react-redux";
@@ -7,15 +7,15 @@ import Popover from "../../components/uielements/popover";
 import { logout } from "../../redux/auth/actions";
 import TopbarDropdownWrapper from "./topbarDropdown.style";
 
+const { Meta } = Card;
+
 class TopbarUser extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			visible: false,
-			styleStatus: {
-				backgroundColor: null,
-			},
+
 			count: 0,
 		};
 	}
@@ -44,52 +44,61 @@ class TopbarUser extends Component {
 		</div>
 	);
 
-	render() {
-		const { gravatarPicture, logout } = this.props;
+	popOverContent = () => {
+		const { agentName, agentEmail, gravatarPicture, logout } = this.props;
 
-		const content = (
-			<TopbarDropdownWrapper className="isoUserDropdown">
-				<Popover content={this.contentStatus()} placement="left">
-					<a className="isoDropdownLink">Status</a>
-				</Popover>
-
-				<a className="isoDropdownLink" onClick={logout}>
-					<FormattedMessage id="topbar.logout" />
-				</a>
-			</TopbarDropdownWrapper>
+		return (
+			<Card
+				style={{ width: 300 }}
+				actions={[
+					<Icon type="setting" />,
+					<Icon type="edit" />,
+					<a className="isoDropdownLink" onClick={logout}>
+						<FormattedMessage id="topbar.logout" />
+					</a>,
+				]}
+			>
+				<Meta
+					avatar={
+						<Avatar
+							shape="circle"
+							src={gravatarPicture}
+							size="default"
+							alt="Fotos de usuário"
+						/>
+					}
+					title={agentName}
+					description={agentEmail}
+				/>
+			</Card>
 		);
+	};
+
+	// <TopbarDropdownWrapper className="isoUserDropdown">
+	// 	<Popover content={this.contentStatus()} placement="left">
+	// 		<a className="isoDropdownLink">Status</a>
+	// 	</Popover>
+
+	// <a className="isoDropdownLink" onClick={logout}>
+	// 	<FormattedMessage id="topbar.logout" />
+	// </a>
+	// </TopbarDropdownWrapper>
+
+	render() {
+		const { agentName, agentOnline } = this.props;
+		const { visible } = this.state;
 
 		return (
 			<Popover
-				content={content}
+				content={this.popOverContent()}
 				trigger="click"
-				visible={this.state.visible}
+				visible={visible}
 				onVisibleChange={this.handleVisibleChange}
 				arrowPointAtCenter={true}
 				placement="bottomLeft"
 			>
-				<Badge
-					count={this.state.count}
-					overflowCount={10}
-					title="Notificações"
-					showZero
-					style={this.state.styleStatus}
-				>
-					{gravatarPicture ? (
-						<Avatar
-							shape="square"
-							src={gravatarPicture}
-							size="large"
-							alt="Fotos de usuário"
-						/>
-					) : (
-						<Avatar
-							shape="square"
-							icon="user"
-							size="large"
-							alt="Fotos de usuário"
-						/>
-					)}
+				<Badge dot status={agentOnline ? "success" : "error"} offset={[0, 5]}>
+					<span>{agentName}</span>
 				</Badge>
 			</Popover>
 		);
@@ -101,8 +110,11 @@ injectIntl(TopbarUser, {
 });
 
 export default connect(
-	(state) => ({
-		gravatarPicture: state.Agent.agent.gravatar_thumb,
+	({ Agent, App }) => ({
+		agentName: Agent.agent.name,
+		agentEmail: Agent.agent.email,
+		agentOnline: App.online,
+		gravatarPicture: Agent.agent.gravatar_thumb,
 	}),
 	{ logout },
 )(TopbarUser);

@@ -1,11 +1,13 @@
+import App from "./app/reducer";
 import Authentication from "./auth/reducer";
 import Account from "./account/reducer";
 import Agent from "./agent/reducer";
-import App from "./app/reducer";
+import Chat from "./chat/reducers";
 
 export default {
-	Authentication,
-	Agent,
-	Account,
 	App,
+	Authentication,
+	Account,
+	Agent,
+	Chat,
 };

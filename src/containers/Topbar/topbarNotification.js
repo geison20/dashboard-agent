@@ -1,70 +1,47 @@
 import React, { Component } from "react";
 import { Popover } from "antd";
 import { connect } from "react-redux";
-import IntlMessages from "../../components/utility/intlMessages";
-import TopbarDropdownWrapper from "./topbarDropdown.style";
+import { injectIntl, FormattedMessage } from "react-intl";
 
-const demoNotifications = [
-	{
-		id: 1,
-		name: "David Doe",
-		notification:
-			"A National Book Award Finalist An Edgar Award Finalist A California Book Award Gold Medal Winner",
-	},
-	{
-		id: 2,
-		name: "Navis Doe",
-		notification:
-			"A National Book Award Finalist An Edgar Award Finalist A California Book Award Gold Medal Winner",
-	},
-	{
-		id: 3,
-		name: "Emanual Doe",
-		notification:
-			"A National Book Award Finalist An Edgar Award Finalist A California Book Award Gold Medal Winner",
-	},
-	{
-		id: 4,
-		name: "Dowain Doe",
-		notification:
-			"A National Book Award Finalist An Edgar Award Finalist A California Book Award Gold Medal Winner",
-	},
-];
+import TopbarDropdownWrapper from "./topbarDropdown.style";
 
 class TopbarNotification extends Component {
 	constructor(props) {
 		super(props);
-		this.handleVisibleChange = this.handleVisibleChange.bind(this);
-		this.hide = this.hide.bind(this);
+
 		this.state = {
 			visible: false,
 		};
 	}
-	hide() {
+
+	hide = () => {
 		this.setState({ visible: false });
-	}
-	handleVisibleChange() {
+	};
+
+	handleVisibleChange = () => {
 		this.setState({ visible: !this.state.visible });
-	}
+	};
+
 	render() {
-		const { customizedTheme } = this.props;
+		const { notifications } = this.props;
+
 		const content = (
 			<TopbarDropdownWrapper className="topbarNotification">
 				<div className="isoDropdownHeader">
 					<h3>
-						<IntlMessages id="sidebar.notification" />
+						<FormattedMessage id="topbar.notification" />
 					</h3>
 				</div>
 				<div className="isoDropdownBody">
-					{demoNotifications.map((notification) => (
+					{notifications.map((notification) => (
 						<a className="isoDropdownListItem" key={notification.id}>
 							<h5>{notification.name}</h5>
-							<p>{notification.notification}</p>
+							<p>acabou de ficar online</p>
 						</a>
 					))}
 				</div>
 				<a className="isoViewAllBtn">
-					<IntlMessages id="topbar.viewAll" />
+					<FormattedMessage id="topbar.viewAll" />
 				</a>
 			</TopbarDropdownWrapper>
 		);
@@ -77,18 +54,18 @@ class TopbarNotification extends Component {
 				placement="bottomLeft"
 			>
 				<div className="isoIconWrapper">
-					<i
-						className="ion-android-notifications"
-						style={{ color: customizedTheme.textColor }}
-					/>
-					<span>{demoNotifications.length}</span>
+					<i className="ion-android-notifications" />
+					<span>{notifications.length}</span>
 				</div>
 			</Popover>
 		);
 	}
 }
 
-export default connect((state) => ({
-	...state.App,
-	customizedTheme: state.ThemeSwitcher.topbarTheme,
+injectIntl(TopbarNotification, {
+	withRef: false,
+});
+
+export default connect(({ Chat: { notifications } }) => ({
+	notifications,
 }))(TopbarNotification);

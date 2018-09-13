@@ -1,12 +1,7 @@
 import { push } from "react-router-redux";
 import { all, takeEvery, takeLatest, put, fork } from "redux-saga/effects";
 
-import {
-	LOGIN_ERROR,
-	LOGIN_SUCCESS,
-	LOGOUT,
-	SET_ACCOUNT_TOKEN,
-} from "./actions";
+import { LOGIN_SUCCESS, LOGOUT, SET_ACCOUNT_TOKEN } from "./actions";
 import { SET_USER } from "../agent/actions";
 import { SET_ACCOUNT } from "../account/actions";
 
@@ -29,7 +24,7 @@ function* loginSuccess({ payload: { token, agent, account } }) {
 
 		yield put(push("/dashboard"));
 	} catch (e) {
-		yield put({ type: LOGIN_ERROR });
+		console.log(e);
 	}
 }
 

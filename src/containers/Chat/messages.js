@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import ReactLoading from "react-loading";
+
 import { timeDifference } from "../../helpers/utility";
 import { MessageSingle, MessageChatWrapper } from "./message.style";
 
@@ -8,25 +10,17 @@ class Messages extends Component {
 		const messageChat = document.getElementById("messageChat");
 		messageChat.scrollTop = messageChat.scrollHeight;
 	};
+
 	componentDidMount() {
 		this.scrollToBottom();
 	}
+
 	componentDidUpdate() {
 		this.scrollToBottom();
 	}
 
-	render() {
-		const {
-			user,
-			userId,
-			selectedChatRoom,
-			messages,
-			toggleViewProfile,
-			toggleMobileProfile,
-		} = this.props;
-
-		const renderMessage = (message) => {
-
+	renderMessage = (message) => {
+		if (message.senderId.startsWith("agent")) {
 			return (
 				<MessageSingle className="loggedUser" key={message.createdAt}>
 					<div className="messageContent isUser">
@@ -38,68 +32,56 @@ class Messages extends Component {
 						</div>
 					</div>
 					<div className="messageGravatar">
+						<img alt="#" src={this.props.agentAvatar} />
+					</div>
+				</MessageSingle>
+			);
+		} else {
+			return (
+				<MessageSingle className="loggedUser" key={message.createdAt}>
+					<div className="messageContent notUser">
+						<div className="messageContentText">
+							<p>{message.text}</p>
+						</div>
+						<div className="messageTime">
+							<p>{timeDifference(message.createdAt)}</p>
+						</div>
+					</div>
+					<div className="messageGravatar">
 						<img
 							alt="#"
-							src="https://cdn.iconscout.com/icon/premium/png-512-thumb/account-49-102982.png"
+							src="http://aproer.org.br/wp-content/uploads/fg-avatar-anonymous-user-retina-lrg.png"
 						/>
 					</div>
 				</MessageSingle>
 			);
+		}
+	};
 
-			// const isUser = userId === message.sender;
-			// const messageUser = isUser ? user : selectedChatRoom.otherUserInfo;
-			// if (isUser) {
-			// 	return (
-			// 		<MessageSingle className="loggedUser" key={message.messageTime}>
-			// 			<div className="messageContent isUser">
-			// 				<div className="messageContentText">
-			// 					<p>{message.text}</p>
-			// 				</div>
-			// 				<div className="messageTime">
-			// 					<p>{timeDifference(message.messageTime)}</p>
-			// 				</div>
-			// 			</div>
-			// 			<div className="messageGravatar">
-			// 				<img
-			// 					alt="#"
-			// 					src={messageUser.profileImageUrl}
-			// 					onClick={() => {
-			// 						toggleMobileProfile(true);
-			// 						toggleViewProfile(messageUser);
-			// 					}}
-			// 				/>
-			// 			</div>
-			// 		</MessageSingle>
-			// 	);
-			// } else {
-			// 	return (
-			// 		<MessageSingle key={message.messageTime}>
-			// 			<div className="messageGravatar">
-			// 				<img
-			// 					alt="#"
-			// 					src={messageUser.profileImageUrl}
-			// 					onClick={() => {
-			// 						toggleMobileProfile(true);
-			// 						toggleViewProfile(messageUser);
-			// 					}}
-			// 				/>
-			// 			</div>
-			// 			<div className="messageContent notUser">
-			// 				<div className="messageContentText">
-			// 					<p>{message.text}</p>
-			// 				</div>
-			// 				<div className="messageTime">
-			// 					<p>{timeDifference(message.messageTime)}</p>
-			// 				</div>
-			// 			</div>
-			// 		</MessageSingle>
-			// 	);
-			// }
-		};
+	render() {
+		const { messages, isTypingIn } = this.props;
 
 		return (
 			<MessageChatWrapper id="messageChat">
-				{messages.map(renderMessage)}
+				{messages.map(this.renderMessage)}
+
+				{isTypingIn.typing && (
+					<MessageSingle className="loggedUser">
+						<div className="messageContent isUser">
+							<div className="messageTime typing">
+								<span className="typingClientName">
+									{isTypingIn.name} Antunes está digitando
+								</span>
+								<ReactLoading
+									color="#000000"
+									type="bubbles"
+									height={40}
+									width={40}
+								/>
+							</div>
+						</div>
+					</MessageSingle>
+				)}
 			</MessageChatWrapper>
 		);
 	}

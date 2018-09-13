@@ -50,6 +50,13 @@
 	"page404.description": "Está página que você está procurando não existe ou foi removida",
 	"page404.backButton": "VOLTAR",
 
+	"topbar.notification": "Notificações",
+	"topbar.logout": "Sair",
+	"topbar.help": "Help",
+	"topbar.viewAll": "Ver Todas",
+	"topbar.viewCart": "View Cart",
+	"topbar.totalPrice": "Total Price",
+
 	"sidebar.chat": "Chat",
 	"sidebar.ecommerce": "Ecommerce",
 	"sidebar.shop": "Shop",
@@ -105,7 +112,6 @@
 	"sidebar.alert": "Alert",
 	"sidebar.modal": "Modal",
 	"sidebar.message": "Message",
-	"sidebar.notification": "Notification",
 	"sidebar.popConfirm": "Pop Confirm",
 	"sidebar.spin": "Spin",
 	"sidebar.tables": "Tables",
@@ -592,11 +598,5 @@
 	"themeSwitcher.purchase": "PURCHAGE NOW",
 	"themeSwitcher.settings": "Settings",
 	"sidebar.selectbox": "Select",
-	"sidebar.frappeChart": "Frappe Charts",
-
-	"topbar.logout": "Sair",
-	"topbar.help": "Help",
-	"topbar.viewAll": "View All",
-	"topbar.viewCart": "View Cart",
-	"topbar.totalPrice": "Total Price"
+	"sidebar.frappeChart": "Frappe Charts"
 }

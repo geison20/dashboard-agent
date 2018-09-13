@@ -1,11 +1,18 @@
 import React, { Component } from "react";
-import WindowResizeListener from "react-window-size-listener";
 import { connect } from "react-redux";
 import { Layout } from "antd";
 import { Debounce } from "react-throttle";
+import { ChatManager, TokenProvider } from "@pusher/chatkit";
+import WindowResizeListener from "react-window-size-listener";
 
 import { logout } from "../../redux/auth/actions";
 import appActions from "../../redux/app/actions";
+import {
+	addChatClients,
+	addNewNotification,
+	removeNotification,
+} from "../../redux/chat/actions";
+
 import Sidebar from "../Sidebar/Sidebar";
 import Topbar from "../Topbar/Topbar";
 import AppRouter from "./AppRouter";
@@ -17,6 +24,66 @@ const { Content, Footer } = Layout;
 const { toggleAll } = appActions;
 
 export class Dashboard extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			currentUser: null,
+		};
+	}
+
+	subscribeWaitingRoom = (currentUser) => {
+		const {
+			addChatClients,
+			addNewNotification,
+			removeNotification,
+			waitingRoomId,
+		} = this.props;
+
+		currentUser.subscribeToRoom({
+			roomId: waitingRoomId,
+			hooks: {
+				onUserCameOnline: ({ id, customData: { name } }) => {
+					addChatClients(currentUser.users);
+					addNewNotification({ id, name });
+					// this.setState({
+					// 	pusherClients: this.filterClients(currentUser.users),
+					// 	pusherAgents: this.filterAgents(currentUser.users),
+					// });
+				},
+				onUserWentOffline: ({ id }) => {
+					addChatClients(currentUser.users);
+					removeNotification(id);
+					// this.setState({
+					// 	pusherClients: this.filterClients(currentUser.users),
+					// 	pusherAgents: this.filterAgents(currentUser.users),
+					// });
+				},
+			},
+		});
+	};
+
+	componentDidMount = async () => {
+		const { agentIdPusher } = this.props;
+
+		const chatKit = new ChatManager({
+			instanceLocator: "v1:us1:a55faaa0-561d-4a4e-afab-ac8e4383e38a",
+			userId: agentIdPusher,
+			tokenProvider: new TokenProvider({
+				url: "http://localhost:5000/api/authentications/clients/chat",
+				headers: {
+					"accept-version": 1,
+					"Accept-Language": "pt",
+				},
+			}),
+		});
+
+		const currentUser = await chatKit.connect();
+
+		this.subscribeWaitingRoom(currentUser);
+		console.log(currentUser);
+	};
+
 	render() {
 		const {
 			match: { url },
@@ -72,6 +139,20 @@ export class Dashboard extends Component {
 }
 
 export default connect(
-	() => ({}),
-	{ logout, toggleAll },
+	({
+		Agent: {
+			agent: { email },
+		},
+		Account: { account },
+	}) => ({
+		agentIdPusher: `agent_${email}_${account.token}`,
+		waitingRoomId: account.waitingRoomId,
+	}),
+	{
+		logout,
+		toggleAll,
+		addChatClients,
+		addNewNotification,
+		removeNotification,
+	},
 )(Dashboard);

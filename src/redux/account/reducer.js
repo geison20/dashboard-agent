@@ -1,4 +1,5 @@
 import { CREATE_ACCOUNT, SET_ACCOUNT } from "./actions";
+import { LOGOUT } from "../auth/actions";
 
 const initState = { account: null };
 
@@ -14,6 +15,9 @@ export default function authReducer(state = initState, { type, account }) {
 				...state,
 				account,
 			};
+
+		case LOGOUT:
+			return initState;
 
 		default:
 			return state;

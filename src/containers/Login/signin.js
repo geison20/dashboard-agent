@@ -21,11 +21,7 @@ class SignIn extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			loading: false,
-		};
-
-		this.handleSubmit = this.handleSubmit.bind(this);
+		this.state = {};
 	}
 
 	componentDidMount() {
@@ -41,8 +37,6 @@ class SignIn extends Component {
 			form: { validateFields },
 		} = this.props;
 
-		this.setState({ loading: true });
-
 		validateFields(async (err, values) => {
 			if (err) return;
 
@@ -54,7 +48,9 @@ class SignIn extends Component {
 				const { account, ...agent } = jwtDecode(token);
 
 				loginSuccess({ account, agent, token });
-			} catch (error) {}
+			} catch (error) {
+				console.log(error);
+			}
 		});
 	};
 

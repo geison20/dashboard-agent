@@ -1,148 +1,244 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import ChatRooms from "./chatrooms";
+import moment from "moment";
+import { Divider } from "antd";
+
+import ChatUsers from "./chatusers";
 import Messages from "./messages";
 import ComposeMessage from "./composMessage";
-import ViewProfile from "../../components/chat/viewProfile";
 import chatManager from "../../settings/pusher";
+import { getClient } from "../../services/ClientService";
+import appActions from "../../redux/app/actions";
+import {
+	addNewNotification,
+	removeNotification,
+} from "../../redux/chat/actions";
 
 import { ChatWindow, ChatBox, ToggleViewProfile } from "./message.style";
 
-import actions from "../../redux/chat/actions";
+const { changeStatus } = appActions;
 
 class DesktopView extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			searchClientModal: false,
-			pusherClients: [],
-			pusherRooms: [],
-			pusherMessages: [],
+			agentAvatar: null,
 			currentUser: null,
+			client: null,
+			pusherClients: [],
+			pusherAgents: [],
+			pusherMessages: [],
+			searchClientModal: false,
+			isTypingIn: {
+				name: null,
+				typing: false,
+			},
 		};
 	}
 
-	componentDidMount = async () => {
-		const { agentIdPusher } = this.props;
+	subscribeWaitingRoom = (currentUser, waitingRoomId) => {
+		const { addNewNotification, removeNotification } = this.props;
 
-		const currentUser = await chatManager(agentIdPusher);
+		currentUser.subscribeToRoom({
+			roomId: waitingRoomId,
+			hooks: {
+				onUserCameOnline: ({ id, customData: { name } }) => {
+					addNewNotification({ id, name });
 
-		// filtrar apenas por contas ids etc
-		currentUser.rooms.forEach(({ id }) => {
-			currentUser.subscribeToRoom({
-				roomId: id,
-				hooks: {
-					onUserCameOnline: (client) => {
-						this.setState({
-							pusherClients: [client, ...this.state.pusherClients],
-						});
-					},
-					onUserWentOffline: (client) => {
-						this.setState({
-							pusherClients: this.state.pusherClients.filter(
-								(c) => c.id !== client.id,
-							),
-						});
-					},
+					this.setState({
+						pusherClients: this.filterClients(currentUser.users),
+						pusherAgents: this.filterAgents(currentUser.users),
+					});
 				},
-			});
-		});
+				onUserWentOffline: ({ id }) => {
+					removeNotification(id);
 
-		this.setState({
-			currentUser,
-			selectedClient: null,
-			roomIdToSend: null,
-			pusherClients: currentUser.users,
-			pusherRooms: currentUser.rooms,
+					this.setState({
+						pusherClients: this.filterClients(currentUser.users),
+						pusherAgents: this.filterAgents(currentUser.users),
+					});
+				},
+			},
 		});
 	};
 
-	handleSelectedClient = async (client) => {
-		const { currentUser } = this.state;
+	handleOnlineOffline = async (isOnlineChecked) => {
+		const { agentIdPusher, waitingRoomId, changeStatus } = this.props;
 
-		const getJoinableRooms = await currentUser.getJoinableRooms();
+		const currentUser = await chatManager(agentIdPusher);
 
-		if (getJoinableRooms.length > 0) {
-			const Room = getJoinableRooms.filter((room) => room.name == client.id);
+		// change global status to client
+		changeStatus();
 
-			await currentUser.joinRoom({
-				roomId: Room[0].id,
+		// online
+		if (isOnlineChecked === true) {
+			this.subscribeWaitingRoom(currentUser, waitingRoomId);
+
+			this.filterClients(currentUser.users).forEach(async (client) => {
+				const { email, accountId } = client.customData;
+
+				const {
+					data: { privateRoomId },
+				} = await getClient({ email, accountId });
+
+				currentUser.subscribeToRoom({
+					roomId: privateRoomId,
+					messageLimit: 100,
+					hooks: {
+						onNewMessage: (message) => {
+							console.log(message);
+							// this.handleOutputMessage(message);
+						},
+					},
+				});
 			});
 
-			this.setState({ roomIdToSend: Room[0].id });
+			this.setState({
+				currentUser,
+				agentAvatar: currentUser.avatarURL,
+				pusherClients: this.filterClients(currentUser.users),
+				pusherAgents: this.filterAgents(currentUser.users),
+			});
+		} else {
+			await currentUser.leaveRoom({ roomId: waitingRoomId });
 
-			currentUser.subscribeToRoom({
-				roomId: Room[0].id,
-				messageLimit: 100,
-				hooks: {
-					onNewMessage: (message) => {
-						this.handleOutputMessage(message);
-					},
-				},
+			this.setState({
+				currentUser: null,
+				agentAvatar: null,
+				selectClient: null,
+				pusherClients: [],
+				pusherAgents: [],
+				pusherMessages: [],
 			});
 		}
+	};
 
-		this.setState({ selectedClient: client });
+	filterClients = (clients) =>
+		clients.filter(
+			(client) =>
+				client.presence.state === "online" && client.id.startsWith("client"),
+		);
+
+	filterAgents = (agents) =>
+		agents.filter(
+			(agent) =>
+				agent.presence.state === "online" && agent.id.startsWith("agent"),
+		);
+
+	handleSelectedClient = async ({ customData, id }) => {
+		this.setState({
+			pusherMessages: [],
+		});
+
+		const { currentUser } = this.state;
+		const { email, accountId } = customData;
+		const {
+			data: { privateRoomId },
+		} = await getClient({ email, accountId });
+
+		currentUser.subscribeToRoom({
+			roomId: privateRoomId,
+			messageLimit: 100,
+			hooks: {
+				onNewMessage: (message) => {
+					const { selectClient } = this.state;
+					const { senderId } = message;
+
+					if (senderId === selectClient.id) this.handleOutputMessage(message);
+				},
+				onUserStartedTyping: (client) => {
+					const { selectClient } = this.state;
+					if (selectClient && client.id === selectClient.id)
+						this.setState({
+							isTypingIn: {
+								name: client.name,
+								typing: true,
+							},
+						});
+				},
+				onUserStoppedTyping: (client) => {
+					const { selectClient } = this.state;
+					if (selectClient && client.id === selectClient.id)
+						this.setState({
+							isTypingIn: {
+								name: null,
+								typing: false,
+							},
+						});
+				},
+			},
+		});
+
+		this.setState({ privateRoomId, selectClient: { id, customData } });
 	};
 
 	handleOutputMessage = (message) => {
 		this.setState({
-			pusherMessages: [message, ...this.state.pusherMessages],
+			pusherMessages: [message, ...this.state.pusherMessages].sort(
+				(left, right) =>
+					moment.utc(left.createdAt).diff(moment.utc(right.createdAt)),
+			),
 		});
 	};
 
+	handleTypingMessage = async () =>
+		await this.state.currentUser.isTypingIn({
+			roomId: this.state.privateRoomId,
+		});
+
 	handleInputMessage = async (message) => {
-		const { roomIdToSend, currentUser } = this.state;
-		console.log(roomIdToSend, message);
+		const { privateRoomId, currentUser } = this.state;
+
 		await currentUser.sendMessage({
 			text: message,
-			roomId: roomIdToSend,
+			roomId: privateRoomId,
 		});
 	};
 
 	render() {
-		const { pusherClients, selectedClient, pusherMessages } = this.state;
+		const {
+			agentAvatar,
+			selectClient,
+			pusherMessages,
+			pusherClients,
+			pusherAgents,
+			isTypingIn,
+		} = this.state;
 
 		return (
 			<ChatWindow className="ChatWindow">
-				{pusherClients.length > 0 && (
-					<ChatRooms
-						pusherClients={pusherClients}
-						handleSelectedClient={this.handleSelectedClient}
-					/>
-				)}
-
+				<ChatUsers
+					pusherClients={pusherClients}
+					pusherAgents={pusherAgents}
+					handleSelectedClient={this.handleSelectedClient}
+					handleOnlineOffline={this.handleOnlineOffline}
+				/>
 				<ChatBox style={{ height: "100%" }}>
 					<ToggleViewProfile>
-						{selectedClient && (
-							<span
-							// onClick={() =>
-							// 	toggleViewProfile(selectedClient.otherUserInfo)
-							// }
-							>
-								{selectedClient.name}
-							</span>
+						{selectClient && (
+							<div>
+								<strong>{selectClient.customData.name}</strong>
+								<Divider type="vertical" />
+								{selectClient.customData.email}
+								<Divider type="vertical" />
+								{selectClient.customData.phone}
+							</div>
 						)}
 					</ToggleViewProfile>
 
-					<Messages messages={pusherMessages} />
+					<Messages
+						agentAvatar={agentAvatar}
+						isTypingIn={isTypingIn}
+						messages={pusherMessages}
+					/>
 
 					<ComposeMessage
 						handleInputMessage={this.handleInputMessage}
+						handleTypingMessage={this.handleTypingMessage}
 						autosize={{ minRows: 2, maxRows: 6 }}
 					/>
 				</ChatBox>
-
-				{/* {viewProfile !== false ? (
-					<ViewProfile
-						user={selectedClient.otherUserInfo}
-						toggleViewProfile={toggleViewProfile}
-						viewProfile={viewProfile}
-					/>
-				) : (
-					""
-				)} */}
 			</ChatWindow>
 		);
 	}
@@ -155,7 +251,8 @@ export default connect(
 		},
 		Account: { account },
 	}) => ({
-		agentIdPusher: `agent_${email}_${id}_${account.id}`,
+		agentIdPusher: `agent_${email}_${account.token}`,
+		waitingRoomId: account.waitingRoomId,
 	}),
-	actions,
+	{ changeStatus, addNewNotification, removeNotification },
 )(DesktopView);

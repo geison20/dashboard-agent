@@ -15,5 +15,5 @@ export default (userId) => {
 		tokenProvider: tokenProvider,
 	});
 
-	return chatKit.connect()
-}
+	return chatKit.connect();
+};

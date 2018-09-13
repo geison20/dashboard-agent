@@ -66,6 +66,7 @@
 		"react-instantsearch": "^4.0.7",
 		"react-intl": "^2.3.0",
 		"react-ladda": "^5.0.6",
+		"react-loading": "^2.0.3",
 		"react-motion-drawer": "^2.1.7",
 		"react-perfect-scrollbar": "^0.2.0",
 		"react-placeholder": "^2.0.0",
