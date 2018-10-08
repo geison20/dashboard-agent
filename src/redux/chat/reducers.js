@@ -1,11 +1,16 @@
-import { ADD_NOTIFICATION, REMOVE_NOTIFICATION, ADD_CLIENTS } from "./actions";
+import {
+	ADD_NOTIFICATION,
+	REMOVE_NOTIFICATION,
+	ADD_CLIENTS,
+	ADD_AGENTS,
+} from "./actions";
 import { LOGOUT } from "../auth/actions";
 
-const initState = { notifications: [], clients: [] };
+const initState = { notifications: [], clients: [], agents: [] };
 
 export default function chatReducer(
 	state = initState,
-	{ type, notification, id, clients },
+	{ type, notification, id, clients, agents },
 ) {
 	switch (type) {
 		case ADD_NOTIFICATION:
@@ -23,6 +28,15 @@ export default function chatReducer(
 					(client) =>
 						client.presence.state === "online" &&
 						client.id.startsWith("client"),
+				),
+			};
+
+		case ADD_AGENTS:
+			return {
+				...state,
+				agents: agents.filter(
+					(agent) =>
+						agent.presence.state === "online" && agent.id.startsWith("agent"),
 				),
 			};
 

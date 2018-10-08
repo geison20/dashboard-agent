@@ -16,15 +16,11 @@ import {
 class ChatRooms extends Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			value: "",
-		};
 	}
 
 	singleChatRoom = (client, index) => {
 		const { handleSelectedClient } = this.props;
-		const { createdAt, id, name } = client;
+		const { createdAt, name } = client;
 
 		const selectedClient = (event) => {
 			event.stopPropagation();
@@ -57,32 +53,32 @@ class ChatRooms extends Component {
 	};
 
 	render() {
-		const { value } = this.state;
+		const { agents, clients } = this.props;
 
 		return (
 			<ChatSidebar>
 				<SidebarSearchBox>
-					<Input
+					{/* <Input
 						value={value}
 						onChange={this.onSearch}
 						placeholder="Buscar clientes"
-					/>
-					<Switch
+					/> */}
+					{/* <Switch
 						onChange={this.props.handleOnlineOffline}
 						checkedChildren="Online"
 						unCheckedChildren="Offline"
-					/>
+					/> */}
 				</SidebarSearchBox>
 				<Divider orientation="left">Agentes Online</Divider>
 				<UserListsWrapper>
 					<Scrollbars>
-						{this.props.pusherAgents.length === 0 ? (
+						{agents.length === 0 ? (
 							<HelperText
 								text="Nenhum agente online"
 								className="messageHelperText"
 							/>
 						) : (
-							this.props.pusherAgents.map((agent, index) => (
+							agents.map((agent, index) => (
 								<UserLists key={index}>
 									<div className="userListsGravatar">
 										<img
@@ -108,13 +104,13 @@ class ChatRooms extends Component {
 				<Divider orientation="left">Clientes Online</Divider>
 				<UserListsWrapper>
 					<Scrollbars>
-						{this.props.pusherClients.length === 0 ? (
+						{clients.length === 0 ? (
 							<HelperText
 								text="Nenhum cliente online"
 								className="messageHelperText"
 							/>
 						) : (
-							this.props.pusherClients.map(this.singleChatRoom)
+							clients.map(this.singleChatRoom)
 						)}
 					</Scrollbars>
 				</UserListsWrapper>
@@ -123,4 +119,7 @@ class ChatRooms extends Component {
 	}
 }
 
-export default connect()(ChatRooms);
+export default connect(({ Chat }) => ({
+	clients: Chat.clients,
+	agents: Chat.agents,
+}))(ChatRooms);

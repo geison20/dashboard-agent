@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import clone from "clone";
 import { Link } from "react-router-dom";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Switch } from "antd";
 import options from "./options";
 import Scrollbars from "../../containers/Sidebar/customScrollBar";
 import { injectIntl, FormattedMessage } from "react-intl";
 import SidebarWrapper from "./sidebar.style";
 import appActions from "../../redux/app/actions";
 import Logo from "../../containers/Sidebar/logo";
+import SwitchStatus from "../../containers/Sidebar/SwitchStatus";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -119,7 +120,7 @@ class Sidebar extends Component {
 	};
 
 	render() {
-		const { app, height } = this.props;
+		const { app, height, handleOnlineOffline } = this.props;
 		const collapsed = clone(app.collapsed);
 		const mode = collapsed === true ? "vertical" : "inline";
 
@@ -133,6 +134,8 @@ class Sidebar extends Component {
 					className="isomorphicSidebar"
 				>
 					<Logo collapsed={collapsed} />
+
+					<SwitchStatus handleOnlineOffline={handleOnlineOffline} />
 
 					<Scrollbars style={{ height: height - 70 }}>
 						<Menu
